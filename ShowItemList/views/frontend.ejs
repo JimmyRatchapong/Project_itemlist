@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css" />
+    <title>Items</title>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1 class="title">Items</h1>
+        <ul id="postsList">
+            <% items.forEach(item=> { %>
+                <li class="item">
+                    <h2>
+                        <%= item.id %>
+                    </h2>
+                    <p>
+                        <img src="http://localhost:3002/uploads/<%= item.img %>" alt="<%= item.img %>" id="imageList" style="width: 200px;">
+                    </p>
+                    <p style="font-weight: bold;">
+                        <%= item.name %>
+                    </p>
+                    <p>
+                        <%= item.description %>
+                    </p>
+                    <button class="detail-button" id="detail-button" type="button"
+                        onclick="detail('<%= item.id %>')">detail</details></button>
+                </li>
+                <% }) %>
+        </ul>
+
+    </div>
+</body>
+
+<script src="/app.js"></script>
+
+</html>

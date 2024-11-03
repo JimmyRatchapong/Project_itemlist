@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css" />
+    <title>Login</title>
+</head>
+<body>
+
+    <div class="login-form">
+        <form action="/login" method="post" id="form" onsubmit="return validate()" >
+            <h1>Login</h1>
+            <div class="login-box">
+                <label for="Username">Username</label>
+                <input type="text" id="Username" name="Username" placeholder="Username" >
+                <span  id="Username_error"></span>
+            </div>
+            <div class="login-box">
+                <label for="Password">Password</label>
+                <input type="password" id="Password" name="Password" placeholder="Password" >
+                <span  id="Password_error"></span>
+            </div>
+            <div id="error-message" style="color: red; display: none;"></div>
+            <button class="button" id="submit" type="submit" >Login</button>
+        </form>
+    </div>
+    <script src="./app.js"></script>   
+</body>
+</html>

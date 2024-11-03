@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css" />
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Detail</h1>
+        <form class="item" method="get" id="detail" enctype="multipart/form-data">
+            <label for="img" style="color: brown; font-weight: bold; font-size: 20px;">img</label>
+            <div id="imageList">
+                <!-- แสดงภาพปัจจุบัน -->
+                <img src="http://localhost:3002/uploads/<%= item.img %>" alt="<%= item.img %>" style="width: 200px;">
+            </div> 
+            <!-- ฟิลด์ซ่อนเพื่อเก็บชื่อไฟล์รูปภาพปัจจุบัน -->
+            <input type="hidden" name="existingImage" value="<%= item.img %>">
+
+            <label for="name" style="color: brown; font-weight:bold; font-size: 20px;">name</label>
+            <p type="text" id="name" name="name"><%= item.name %></p>
+
+            <label for="description" style="color: brown; font-weight: bold; font-size: 20px;">description</label>
+            <p name="description" id="description" type="text" rows="10"><%= item.description %></p>
+            
+        </form>
+    </div>
+</body>
+
+<script src="/app.js"></script>  
+</html>
