@@ -257,6 +257,7 @@ app.post('/save_edititem/:id', upload.single('img'), async (req, res) => {
     }
 
         // ดึงข้อมูล item จากฐานข้อมูลอีกครั้ง
+    
     const query = 'SELECT * FROM testtmg.itemlist WHERE id = ?';
     const [items] = await pool.query(query, [id]);
     const item = items[0]; // ดึงรายการแรกจากอาร์เรย์
@@ -266,9 +267,33 @@ app.post('/save_edititem/:id', upload.single('img'), async (req, res) => {
   }
 
   const query = 'UPDATE testtmg.itemlist SET img = ?, name = ?, description = ? WHERE id = ?';
+  const selectQuery = 'SELECT img FROM testtmg.itemlist WHERE id = ?';
 
+  
   try {
-    await pool.query(query, [img, name, description, id]);
+    const [rows] = await pool.query(selectQuery, [id]);
+    if (rows.length === 0) {
+      return res.status(404).send('Item not found');
+    }
+
+    const oldImageFilename = rows[0].img;
+    const oldFilePath = path.join(__dirname, 'public', 'uploads', oldImageFilename);
+
+    // ลบไฟล์รูปเก่าออกจากโฟลเดอร์ uploads เฉพาะเมื่อมีการอัปโหลดไฟล์ใหม่
+    if (req.file) {
+      fs.unlink(oldFilePath, (err) => {
+        if (err) {
+          console.error('Error deleting old image file:', err);
+        } else {
+          console.log('Old image file deleted:', oldImageFilename);
+        }
+      });
+    }
+
+    // ถ้าไม่มีการอัปโหลดรูปใหม่ ให้ใช้รูปเดิม
+    const imageToSave = img || oldImageFilename;
+
+    await pool.query(query, [imageToSave, name, description, id]);
     res.redirect('/itemlist'); // หลังจากอัปเดตเสร็จสิ้น กลับไปยังหน้ารายการ
   } catch (error) {
     console.error('Error updating item:', error);
@@ -288,11 +313,32 @@ app.get('/deleteitem/:id', async (req, res) => {
   const  { id }  = req.params; // Get the item ID from URL parameters ,แยก id ที่ส่งมาพร้อม partURL ,ที่ต้องใส่ {} เพราะเราจะเอามาแค่ตัวเลข id
   console.log('Item ID to delete:', id); // ตรวจสอบว่ามีค่า id ที่ถูกต้อง
   // SQL query to delete the item
-  const query = 'DELETE FROM testtmg.itemlist WHERE id = ?';
+  const deleteQuery = 'DELETE FROM testtmg.itemlist WHERE id = ?';
+  const selectQuery = 'SELECT img FROM testtmg.itemlist WHERE id = ?';
 
   try {
+
+    // ดึงชื่อไฟล์รูปจากฐานข้อมูล
+    const [rows] = await pool.query(selectQuery, [id]);
+    if (rows.length === 0) {
+      return res.status(404).send('Item not found');
+    }
+
+    const imageFilename = rows[0].img;
+    const filePath = path.join(__dirname, 'public', 'uploads', imageFilename);
+
+    // ลบไฟล์รูปออกจากโฟลเดอร์ uploads
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error('Error deleting image file:', err);
+        // หากลบไฟล์ไม่สำเร็จ ให้ทำการลบข้อมูลในฐานข้อมูลต่อไป
+      } else {
+        console.log('Image file deleted:', imageFilename);
+      }
+    });
+
     // Execute the query to delete the item based on the provided ID
-    await pool.query(query, [id]);
+    await pool.query(deleteQuery, [id]);
     res.redirect('/itemlist'); // Redirect to item list page after deletion
   } catch (error) {
     console.error('Error deleting item:', error);
